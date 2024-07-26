@@ -14,48 +14,26 @@ def merge_info_dicts(dict_list):
             if isinstance(value, list):
                 main_body[key] = list(set(main_body[key] + value))
             else:
-                if not main_body[key]:
+                if not main_body[key] or main_body[key] == "":
                     main_body[key] = value
                 elif key == "客户是否有卡点":
                     if value == "有卡点":
                         main_body[key] = "有卡点"
-                elif key == "客户是否有意向":
-                    if value == "有意向":
-                        main_body[key] = "有意向"
 
     return main_body
 
 
 def merge_records(data):
-    merged_data = {}
-
     for record in data:
-        index = record['index']
-        if index not in merged_data:
-            merged_data[index] = {}
-
+        infos = []
         for info in record['infos']:
             info['基本信息-姓名'] = info['基本信息-姓名'][0:3]
-            customer_name = info['基本信息-姓名']
-
             if not info['基本信息-姓名'][2:3].isdigit():
                 continue
+            infos.append(info)
+        record["infos"] = [merge_info_dicts(infos)]
 
-            if customer_name not in merged_data[index]:
-                merged_data[index][customer_name] = []
-
-            merged_data[index][customer_name].append(info)
-
-    # Merge records for each customer within each index
-    final_result = []
-    for index, customers in merged_data.items():
-        merged_customers_info = []
-        for customer_name, infos in customers.items():
-            merged_info = merge_info_dicts(infos)
-            merged_customers_info.append(merged_info)
-        final_result.append({'index': index, 'infos': merged_customers_info})
-
-    return final_result
+    return data
 
 
 with open('final_retry_long_7100block.json', 'r', encoding='utf-8') as f:
