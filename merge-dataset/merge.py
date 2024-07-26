@@ -1,0 +1,70 @@
+# 根据客户名称对内容进行合并，以第一个为主体，保留剩余的内容
+# 单值字段：保留有卡点，有意向
+# list累加 排重
+# 名字超4个字删除，如果名字第三个字符不为数字也删除
+
+import json
+
+
+def merge_info_dicts(dict_list):
+    main_body = dict_list[0]
+
+    for info_dict in dict_list[1:]:
+        for key, value in info_dict.items():
+            if isinstance(value, list):
+                main_body[key] = list(set(main_body[key] + value))
+            else:
+                if not main_body[key]:
+                    main_body[key] = value
+                elif key == "客户是否有卡点":
+                    if value == "有卡点":
+                        main_body[key] = "有卡点"
+                elif key == "客户是否有意向":
+                    if value == "有意向":
+                        main_body[key] = "有意向"
+
+    return main_body
+
+
+def merge_records(data):
+    merged_data = {}
+
+    for record in data:
+        index = record['index']
+        if index not in merged_data:
+            merged_data[index] = {}
+
+        for info in record['infos']:
+            info['基本信息-姓名'] = info['基本信息-姓名'][0:3]
+            customer_name = info['基本信息-姓名']
+
+            if not info['基本信息-姓名'][2:3].isdigit():
+                continue
+
+            if customer_name not in merged_data[index]:
+                merged_data[index][customer_name] = []
+
+            merged_data[index][customer_name].append(info)
+
+    # Merge records for each customer within each index
+    final_result = []
+    for index, customers in merged_data.items():
+        merged_customers_info = []
+        for customer_name, infos in customers.items():
+            merged_info = merge_info_dicts(infos)
+            merged_customers_info.append(merged_info)
+        final_result.append({'index': index, 'infos': merged_customers_info})
+
+    return final_result
+
+
+with open('final_retry_long_7100block.json', 'r', encoding='utf-8') as f:
+    raw_data = json.load(f)
+
+final_data = merge_records(raw_data)
+
+with open('merged_final_retry.json', 'w', encoding='utf-8') as f:
+    json.dump(final_data, f, ensure_ascii=False, indent=4)
+
+# Print the merged data
+# print(json.dumps(merged_data, ensure_ascii=False, indent=4))
