@@ -1,0 +1,114 @@
+C:\Users\Amanda\PycharmProjects\pythonProject\venv\Scripts\python.exe "D:\Program Files\JetBrains\PyCharm 2021.3.1\plugins\python\helpers\pydev\pydevd.py" --multiproc --qt-support=auto --client 127.0.0.1 --port 59096 --file "D:/Individual Resume/SparkModelContest/dataset_org/longchatv1.py"
+Connected to pydev debugger (build 213.6461.77)
+index:  1
+request len:  11793
+index:  2
+request len:  2017
+index:  3
+request len:  2508
+index:  4
+request len:  11105
+index:  5
+request len:  5900
+index:  6
+request len:  2852
+index:  7
+request len:  17734
+index:  8
+request len:  2479
+index:  9
+request len:  2637
+index:  10
+request len:  9112
+index:  11
+request len:  13208
+index:  12
+request len:  5470
+index:  13
+request len:  21002
+index:  14
+request len:  3464
+index:  15
+request len:  1834
+index:  16
+request len:  1948
+index:  17
+request len:  4300
+index:  18
+request len:  6992
+index:  19
+request len:  8244
+index:  20
+request len:  4137
+index:  21
+request len:  2016
+index:  22
+request len:  13494
+index:  23
+request len:  3036
+index:  24
+request len:  17598
+index:  25
+request len:  6259
+index:  26
+request len:  4802
+index:  27
+request len:  4462
+index:  28
+request len:  1728
+index:  29
+request len:  3785
+index:  30
+request len:  16090
+index:  31
+request len:  10045
+index:  32
+request len:  8714
+index:  33
+request len:  31166
+index:  34
+request len:  3655
+index:  35
+request len:  4293
+index:  36
+request len:  2859
+index:  37
+request len:  6042
+index:  38
+request len:  23398
+index:  39
+request len:  6498
+index:  40
+request len:  17714
+index:  41
+request len:  17770
+index:  42
+request len:  11152
+index:  43
+request len:  15810
+index:  44
+request len:  3770
+index:  45
+request len:  1942
+index:  46
+request len:  7651
+index:  47
+request len:  2827
+index:  48
+request len:  8904
+index:  49
+request len:  4563
+index:  50
+request len:  22182
+index:  51
+request len:  2024
+index:  52
+request len:  8562
+index:  53
+request len:  3205
+index:  54
+request len:  2121
+index:  55
+request len:  10059
+
+Process finished with exit code 0

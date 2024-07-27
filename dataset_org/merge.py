@@ -36,12 +36,12 @@ def merge_records(data):
     return data
 
 
-with open('final_retry_long_7100block.json', 'r', encoding='utf-8') as f:
+with open('final_retry_long03_after.json', 'r', encoding='utf-8') as f:
     raw_data = json.load(f)
 
 final_data = merge_records(raw_data)
 
-with open('merged_final_retry1.json', 'w', encoding='utf-8') as f:
+with open('merge_final_retry_long03_after.json', 'w', encoding='utf-8') as f:
     json.dump(final_data, f, ensure_ascii=False, indent=4)
 
 # Print the merged data
