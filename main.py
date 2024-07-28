@@ -107,7 +107,7 @@ def mergeInfos(last, current):
 if __name__ == "__main__":
     # 从文件中读取内容
     try:
-        with open("system.md", "r", encoding="utf-8") as f:
+        with open("system_03.md", "r", encoding="utf-8") as f:
             systemContent = f.read()
     except FileNotFoundError:
         print("系统文件未找到")

@@ -5,14 +5,15 @@ import json
 import re
 
 # 星火认知大模型Spark Max的URL值，其他版本大模型URL值请前往文档（https://www.xfyun.cn/doc/spark/Web.html）查看
-SPARKAI_URL = "wss://spark-api-n.xf-yun.com/v3.1/chat"
+SPARKAI_URL = "wss://spark-api.xf-yun.com/v3.5/chat"
 # SPARKAI_URL = "wss://spark-api-n.xf-yun.com/v3.1/chat"
 # 星火认知大模型调用秘钥信息，请前往讯飞开放平台控制台（https://console.xfyun.cn/services/bm35）查看
 SPARKAI_APP_ID = "1416480a"
 SPARKAI_API_SECRET = "YmZlYTM4Nzg4ZjUyNmNiMjA5MTNjZmZj"
 SPARKAI_API_KEY = "eb503c5b44ed3ff9477db7f745a933bb"
 # 星火认知大模型Spark Max的domain值，其他版本大模型domain值请前往文档（https://www.xfyun.cn/doc/spark/Web.html）查看
-SPARKAI_DOMAIN = "patchv3"
+# SPARKAI_DOMAIN = "patchv3"
+SPARKAI_DOMAIN = "generalv3.5"
 
 spark = ChatSparkLLM(
     spark_api_url=SPARKAI_URL,
@@ -91,37 +92,53 @@ if __name__ == "__main__":
             cleaned_resp = cleaned_resp.replace("'", '"')
             answer["infos"] = json.loads(cleaned_resp)
         else:
+            resp, history = chat(
+                userContent=item["chat_text"][0:6570] + systemContent, history=None
+            )
+            # 使用正则表达式去除前缀和后缀
+            cleaned_resp = re.sub(r'^```json\n|```$', '', resp, flags=re.MULTILINE)
+            # 将单引号替换成双引号
+            cleaned_resp = cleaned_resp.replace("'", '"')
+            answer["infos"] = json.loads(cleaned_resp)
             # 对于长文本分块处理，最后进行merge
-            userContentBlocks = []
-            cut_len = 0
-            for i in range(0, len(item["chat_text"]), 6500):
-                if i + 8100 > len(item["chat_text"]):
-                    userContentBlocks.append(item["chat_text"][i:])
-
-                elif i == 0:
-                    userContentBlocks.append(item["chat_text"][i: i + 6500])
-                else:
-                    userContentBlocks.append(item["chat_text"][i - 600: i + 6500])
-            # 切分块完成之后，循环调用大模型
-            for block in userContentBlocks:
-                # print("userContentBlocks:",block)
-
-                resp, history = chat(userContent=block+systemContent, history=None)
-                # 使用正则表达式去除前缀和后缀
-                cleaned_resp = re.sub(r'^```json\n|```$', '', resp, flags=re.MULTILINE)
-                # 将单引号替换成双引号
-                cleaned_resp = cleaned_resp.replace("'", '"')
+            # userContentBlocks = []
+            # cut_len = 0
+            # for i in range(0, len(item["chat_text"]), 6500):
+            #     if i + 8100 > len(item["chat_text"]):
+            #         userContentBlocks.append(item["chat_text"][i:])
+            #
+            #     elif i == 0:
+            #         userContentBlocks.append(item["chat_text"][i: i + 6500])
+            #     else:
+            #         userContentBlocks.append(item["chat_text"][i - 600: i + 6500])
+            # # 切分块完成之后，循环调用大模型
+            # for block in userContentBlocks:
+            #     # print("userContentBlocks:",block)
+            #
+            #     resp, history = chat(userContent=block+systemContent, history=None)
+            #     # 使用正则表达式去除前缀和后缀
+            #     cleaned_resp = re.sub(r'^```json\n|```$', '', resp, flags=re.MULTILINE)
+            #     # 将单引号替换成双引号
+            #     cleaned_resp = cleaned_resp.replace("'", '"')
                 # print("resp_xunhuan:",cleaned_resp)
                 # 转json格式后提取字典第一个元素，然后循环累加到list中，得到最终的list列表，每个元素是结果字典的形式
                 # answer["infos"].append(json.loads(cleaned_resp)[0])
                 # answer["infos"] = [json.loads(cleaned_resp)[0]] + answer["infos"]
-
         index += 1
+        if index == 20:
+            with open("budget8_20.json", "w", encoding="utf-8") as f:
+                f.write(json.dumps(final, indent=4, ensure_ascii=False))
+        if index == 40:
+            with open("budget8_40.json", "w", encoding="utf-8") as f:
+                f.write(json.dumps(final, indent=4, ensure_ascii=False))
+        if index == 50:
+            with open("budget8_50.json", "w", encoding="utf-8") as f:
+                f.write(json.dumps(final, indent=4, ensure_ascii=False))
         final.append(answer)
 
     # 写入JSON文件，确保非ASCII字符正确写入
     try:
-        with open("final_retry_long03_after.json", "w", encoding="utf-8") as f:
+        with open("budget8.json", "w", encoding="utf-8") as f:
             f.write(json.dumps(final, indent=4, ensure_ascii=False))
     except IOError:
         print("写入文件时发生错误")

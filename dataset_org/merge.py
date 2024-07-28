@@ -36,7 +36,7 @@ def merge_records(data):
     return data
 
 
-with open('final_retry_long03_after.json', 'r', encoding='utf-8') as f:
+with open('final_retry_long03_修改index08.json', 'r', encoding='utf-8') as f:
     raw_data = json.load(f)
 
 final_data = merge_records(raw_data)

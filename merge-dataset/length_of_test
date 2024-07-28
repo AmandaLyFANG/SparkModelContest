@@ -4,6 +4,7 @@ index:  1
 request len:  11793
 index:  2
 request len:  2017
+(可能有)
 index:  3
 request len:  2508
 index:  4
@@ -20,10 +21,12 @@ request len:  2479
 "客户购买阶段": "续费",
 index:  9
 request len:  2637
+(有预算)
 index:  10
 request len:  9112
 index:  11
 request len:  13208
+有价格
 index:  12
 request len:  5470
 （李娜7是男的）
@@ -35,6 +38,7 @@ index:  15
 request len:  1834
 index:  16
 request len:  1948
+价格
 index:  17
 request len:  4300
 index:  18
