@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 
 # Load the JSON data
-with open('D:\\Individual Resume\\SparkModelContest\\merge-dataset\\merged_final_retry.json', 'r', encoding='utf-8') as file:
+with open('D:\\Individual Resume\\SparkModelContest\\dataset\\train.json', 'r', encoding='utf-8') as file:
     data = json.load(file)
 
 # Initialize a dictionary to store distinct values for each column

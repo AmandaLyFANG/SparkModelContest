@@ -49,8 +49,9 @@ def chat(userContent, history=None):
 
 def preprocess_con(param):
     param = param.replace('- ', '')
-    param = param.replace(' ', '')
+    param = param.replace('✖️', '*')
     param = param.replace('【收集表】 2023年度服务满意度评价  https://doc.weixin.qq.com/forms/AA4AQQf9ABAANcAtwbvAGgFlrsYcuBSyf', '')
+    param = param.replace(' ', '')
     return param
 
 
@@ -59,6 +60,7 @@ if __name__ == "__main__":
     try:
         with open("D:\\Individual Resume\\SparkModelContest\\system_03.md", "r", encoding="utf-8") as f:
             systemContent = f.read()
+            print(len(systemContent))
     except FileNotFoundError:
         print("系统文件未找到")
         exit()
@@ -76,46 +78,44 @@ if __name__ == "__main__":
     for item in trainData:
         answer = {"index": index}
         print("index: ", index)
-        conversation = preprocess_con(item["chat_text"])
+        item["chat_text"] = preprocess_con(item["chat_text"])
         print("request len: ", len(systemContent) + len(item["chat_text"]))
         answer["infos"] = []
-        try:
-            if len(systemContent) + len(item["chat_text"]) < 8192:
-                resp, history = chat(
-                    userContent=item["chat_text"], history=newHistory(systemContent)
-                )
+        if len(systemContent) + len(item["chat_text"]) < 8192:
+            resp, history = chat(
+                userContent=item["chat_text"] + systemContent, history=None
+            )
+            # 使用正则表达式去除前缀和后缀
+            cleaned_resp = re.sub(r'^```json\n|```$', '', resp, flags=re.MULTILINE)
+            # 将单引号替换成双引号
+            cleaned_resp = cleaned_resp.replace("'", '"')
+            answer["infos"] = json.loads(cleaned_resp)
+        else:
+            # 对于长文本分块处理，最后进行merge
+            userContentBlocks = []
+            cut_len = 0
+            for i in range(0, len(item["chat_text"]), 6500):
+                if i + 8100 > len(item["chat_text"]):
+                    userContentBlocks.append(item["chat_text"][i:])
+
+                elif i == 0:
+                    userContentBlocks.append(item["chat_text"][i: i + 6500])
+                else:
+                    userContentBlocks.append(item["chat_text"][i - 600: i + 6500])
+            # 切分块完成之后，循环调用大模型
+            for block in userContentBlocks:
+                # print("userContentBlocks:",block)
+
+                resp, history = chat(userContent=block+systemContent, history=None)
                 # 使用正则表达式去除前缀和后缀
                 cleaned_resp = re.sub(r'^```json\n|```$', '', resp, flags=re.MULTILINE)
                 # 将单引号替换成双引号
                 cleaned_resp = cleaned_resp.replace("'", '"')
-                answer["infos"] = json.loads(cleaned_resp)
-            else:
-                # 对于长文本分块处理，最后进行merge
-                userContentBlocks = []
-                for i in range(0, len(item["chat_text"]), 8100):
-                    if i + 8100 > len(item["chat_text"]):
-                        userContentBlocks.append(item["chat_text"][i:])
+                # print("resp_xunhuan:",cleaned_resp)
+                # 转json格式后提取字典第一个元素，然后循环累加到list中，得到最终的list列表，每个元素是结果字典的形式
+                # answer["infos"].append(json.loads(cleaned_resp)[0])
+                # answer["infos"] = [json.loads(cleaned_resp)[0]] + answer["infos"]
 
-                    elif i == 0:
-                        userContentBlocks.append(item["chat_text"][i: i + 8100])
-                    else:
-                        userContentBlocks.append(item["chat_text"][i - 600: i + 8100])
-                # 切分块完成之后，循环调用大模型
-                for block in userContentBlocks:
-                    # print("userContentBlocks:",block)
-
-                    resp, history = chat(userContent=block, history=newHistory(systemContent))
-                    # 使用正则表达式去除前缀和后缀
-                    cleaned_resp = re.sub(r'^```json\n|```$', '', resp, flags=re.MULTILINE)
-                    # 将单引号替换成双引号
-                    cleaned_resp = cleaned_resp.replace("'", '"')
-                    # print("resp_xunhuan:",cleaned_resp)
-                    # 转json格式后提取字典第一个元素，然后循环累加到list中，得到最终的list列表，每个元素是结果字典的形式
-                    answer["infos"].append(json.loads(cleaned_resp)[0])
-                    # answer["infos"] = [json.loads(cleaned_resp)[0]] + answer["infos"]
-        except Exception as e:  # 可以根据需要修改异常类型
-            print(f"处理过程中出现错误: {e}")
-            answer["infos"] = []
         index += 1
         final.append(answer)
 
